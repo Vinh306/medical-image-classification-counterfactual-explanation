@@ -45,4 +45,4 @@ def save_strip_png(path: str, x01, xcs, preds, fx):
     draw = ImageDraw.Draw(canvas)
     for i, s in enumerate(names):
         draw.text((i * W + 4, H + 3), s, fill=(255, 255, 255))
-    canvas.save(path)
+    canvas.save(path, dpi=(300, 300))

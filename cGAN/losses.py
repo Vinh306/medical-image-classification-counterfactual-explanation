@@ -13,8 +13,8 @@ def g_adv_loss(fake_logit):
 
 # (2) Classifier consistency: KL(f(x_c) || c)
 def bernoulli_kl(p, q, eps = 1e-6):
-    p, q = p.clamp(eps, 1 - eps), q.clamp(eps, 1 - eps)
-    return p * torch.log(p / q) + (1 - p) * torch.log((1 - p) / (1 - q))
+    p, q = p.float().clamp(eps, 1.0 - eps), q.float().clamp(eps, 1.0 - eps)
+    return p * torch.log(p / q) + (1.0 - p) * torch.log((1.0 - p) / (1.0 - q))
 
 
 def classifier_consistency_loss(f_xc, c_target):
