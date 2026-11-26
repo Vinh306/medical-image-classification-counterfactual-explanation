@@ -31,7 +31,8 @@ def main():
     df["score"] = torch.cat(scores).numpy()
     df.to_csv(a.output_path, index=False)
     print(f"Đã ghi {a.output_path}; phân bố bin:")
-    print(pd.cut(df["score"], bins=[i / 10 for i in range(11)], include_lowest=True).value_counts().sort_index())
+    bin_labels = [f"[{i/10:.1f}, {(i+1)/10:.1f})" for i in range(9)] + ["[0.9, 1.0]"]
+    print(pd.cut(df["score"], bins=[i / 10 for i in range(11)], labels=bin_labels, include_lowest=True).value_counts().sort_index())
 
 
 if __name__ == "__main__":

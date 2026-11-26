@@ -57,21 +57,20 @@ def main():
     X = load_explainer(a.explainer_path)
     fid_net = build_fid_net(a.fid_net)
 
-    flip_n, real_n, cf_n = run_group(neg, N_BINS - 1, X, f, fid_net, a.batch_size, a.num_workers, a.tau)   # neg -> pos (c=1)
-    flip_p, real_p, cf_p = run_group(pos, 0, X, f, fid_net, a.batch_size, a.num_workers, a.tau)            # pos -> neg (c=0)
-    real_all = np.concatenate([real_n, real_p], axis=0)
+    flip_n, real_n, cf_n = run_group(neg, N_BINS - 1, X, f, fid_net, a.batch_size, a.num_workers, a.tau) # neg -> pos (c=1)
+    flip_p, real_p, cf_p = run_group(pos, 0, X, f, fid_net, a.batch_size, a.num_workers, a.tau) # pos -> neg (c=0)
+    real_target_all = np.concatenate([real_p, real_n], axis=0)
     cf_all = np.concatenate([cf_n, cf_p], axis=0)
-
     results = {
         "target": a.target,
-        "n_total": len(real_all),
+        "n_total": len(real_target_all),
         "n_neg": len(neg), "n_pos": len(pos), "tau": a.tau,
         "CV": float(torch.cat([flip_n, flip_p]).float().mean()),
         "CV_neg_to_pos": float(flip_n.float().mean()),
         "CV_pos_to_neg": float(flip_p.float().mean()),
-        "FID_total": fid_from_features(real_all, cf_all),
-        "FID_neg_to_pos": fid_from_features(real_n, cf_n),
-        "FID_pos_to_neg": fid_from_features(real_p, cf_p),
+        "FID_total": fid_from_features(real_target_all, cf_all),      
+        "FID_neg_to_pos": fid_from_features(real_p, cf_n),          
+        "FID_pos_to_neg": fid_from_features(real_n, cf_p),      
         "fid_net": a.fid_net or "ImageNet",
     }
     print(json.dumps(results, indent=2, ensure_ascii=False))
